@@ -16,8 +16,13 @@ public class GameService {
     @Autowired
     GameRepository gameRepository;
 
-    public NewGameResDTO createNewGame(String playerName) {
-        Game newGame = new Game(playerName);
+    public NewGameResDTO createNewGame(String playerName) throws IllegalArgumentException {
+        String name = playerName.trim();
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException("Please provide a playerName to continue");
+        };
+
+        Game newGame = new Game(name);
         Game resGame = gameRepository.save(newGame);
         return modelMapper.map(resGame,NewGameResDTO.class);
     };

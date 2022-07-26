@@ -5,6 +5,7 @@ import com.example.rpsproject.dto.NewGameResDTO;
 import com.example.rpsproject.model.Game;
 import com.example.rpsproject.model.Status;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -12,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+import org.modelmapper.internal.bytebuddy.implementation.bytecode.Throw;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
@@ -46,4 +48,11 @@ public class GameServiceTest {
         Assertions.assertEquals(responseDto, actualDto);
     }
 
+    @Disabled
+    @Test
+    void invalid_request_with_blank_player_name_IllegalArgument() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            gameService.createNewGame("           ");
+        });
+    }
 }

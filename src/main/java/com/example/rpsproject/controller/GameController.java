@@ -16,10 +16,14 @@ public class GameController {
     // Post mapping
     @PostMapping("/{playerName}")
     // Receives post request with the playerName as a path variable
-    public ResponseEntity<NewGameResDTO> createNewGame(@PathVariable("playerName") String playerName) {
-        // invokes createNewGame with the playerName
-        NewGameResDTO resDTO = gameService.createNewGame(playerName);
-        // create and return response entity with status 200 and bodyDTO
-        return ResponseEntity.ok().body(resDTO);
+    public ResponseEntity<?> createNewGame(@PathVariable("playerName") String playerName) {
+        try {
+            // invokes createNewGame with the playerName
+            NewGameResDTO resDTO = gameService.createNewGame(playerName);
+            // create and return response entity with status 200 and bodyDTO
+            return ResponseEntity.ok().body(resDTO);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
     }
 }

@@ -29,7 +29,7 @@ public class GameControllerTest {
 
         when(gameService.createNewGame("John Doe")).thenReturn(responseDto);
 
-        ResponseEntity<NewGameResDTO> actualResponse = gameController.createNewGame("John Doe");
+        ResponseEntity<?> actualResponse = gameController.createNewGame("John Doe");
 
         Assertions.assertEquals(responseDto, actualResponse.getBody());
     }
