@@ -48,11 +48,14 @@ public class GameServiceTest {
         Assertions.assertEquals(responseDto, actualDto);
     }
 
-    @Disabled
+
     @Test
     void invalid_request_with_blank_player_name_IllegalArgument() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        Exception exception = Assertions.assertThrows(IllegalArgumentException.class, () -> {
             gameService.createNewGame("           ");
         });
+        String expectedMessage = "Please provide a playerName to continue";
+        String actualMessage = exception.getMessage();
+        Assertions.assertTrue(actualMessage.contains(expectedMessage));
     }
 }
