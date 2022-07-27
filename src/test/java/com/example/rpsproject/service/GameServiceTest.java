@@ -14,7 +14,6 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.internal.bytebuddy.implementation.bytecode.Throw;
-import org.omg.CORBA.portable.ApplicationException;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
