@@ -11,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,5 +33,13 @@ public class GameControllerTest {
         ResponseEntity<?> actualResponse = gameController.createNewGame("John Doe");
 
         Assertions.assertEquals(responseDto, actualResponse.getBody());
+    }
+
+    @Test
+    void createNewGame_negativeTest() {
+        when(gameService.createNewGame("test")).thenThrow(IllegalArgumentException.class);
+        ResponseEntity<?> response = gameController.createNewGame("test");
+        int expectedStatus = 400;
+        assertThat(response.getStatusCodeValue()).isEqualTo(expectedStatus);
     }
 }
