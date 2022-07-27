@@ -19,7 +19,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class GameServiceTest {
+class GameServiceTest {
     @Spy
     private ModelMapper modelMapper;
 
@@ -63,13 +63,23 @@ public class GameServiceTest {
     void test_generateMoveInt() {
         int actual = gameService.generateMoveInt();
 
-        assertThat(actual).isBetween(0, 3);
+        assertThat(actual).isBetween(0, 2);
     }
 
     @Test
     void generateComputerMove_positiveTest() {
-        Move computerMove = gameService.generateComputerMove(0);
+        Move computerMove1 = gameService.generateComputerMove(0);
+        Move computerMove2 = gameService.generateComputerMove(1);
+        Move computerMove3 = gameService.generateComputerMove(2);
+        Assertions.assertEquals(Move.Rock, computerMove1);
+        Assertions.assertEquals(Move.Paper, computerMove2);
+        Assertions.assertEquals(Move.Scissors, computerMove3);
+    }
 
-        Assertions.assertEquals(Move.Rock, computerMove);
+    @Test
+    void generateComputerMove_negativeTest() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            Move computerMove = gameService.generateComputerMove(4);
+        });
     }
 }

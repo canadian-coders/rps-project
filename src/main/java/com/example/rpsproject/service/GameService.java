@@ -38,12 +38,15 @@ public class GameService {
 
     // function to generate computer move
     public Move generateComputerMove(int moveInt) {
-        if (moveInt == 0) {
-            return Move.Rock;
-        } else if (moveInt == 1) {
-            return Move.Paper;
-        } else {
-            return Move.Scissors;
+        switch (moveInt) {
+            case 0:
+                return Move.Rock;
+            case 1:
+                return Move.Paper;
+            case 2:
+                return Move.Scissors;
+            default:
+                throw new IllegalArgumentException("Computer did not make a move");
         }
     }
 
