@@ -29,7 +29,7 @@ class GameControllerTest {
     @Test
     void createNewGame_positiveTest() {
 
-        NewGameResDTO responseDto = new NewGameResDTO(0, Status.started, "John Doe");
+        NewGameResDTO responseDto = new NewGameResDTO(0, Status.Started, "John Doe");
 
         when(gameService.createNewGame("John Doe")).thenReturn(responseDto);
 
@@ -48,7 +48,7 @@ class GameControllerTest {
 
     @Test
     void resolveGame_positiveTest() {
-        Game game = new Game(0, "John Doe", Move.Paper, Move.Rock, Status.finished, Result.Win);
+        Game game = new Game(0, "John Doe", Move.Paper, Move.Rock, Status.Finished, Result.Win);
         when(gameService.updateGame(0, Move.Paper)).thenReturn(game);
 
         ResponseEntity<?> actualResponse = gameController.resolveGame("0", "paper");

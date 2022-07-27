@@ -4,8 +4,10 @@ import com.example.rpsproject.dao.GameRepository;
 import com.example.rpsproject.dto.NewGameResDTO;
 import com.example.rpsproject.model.Game;
 import com.example.rpsproject.model.Move;
+import com.example.rpsproject.model.Result;
 import com.example.rpsproject.model.Status;
 import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -32,10 +34,10 @@ class GameServiceTest {
     @Test
     void verify_new_game_created_PositiveTest() {
         // create DTO for GameService's createNewGame method to return
-        NewGameResDTO responseDto = new NewGameResDTO(0, Status.started, "John Doe");
+        NewGameResDTO responseDto = new NewGameResDTO(0, Status.Started, "John Doe");
 
         // mock game object to return from the DAO layer
-        Game game = new Game(0,"John Doe",null, null,Status.started, null);
+        Game game = new Game(0,"John Doe",null, null,Status.Started, null);
         // mock method call to return the mock game object
         when(gameRepository.save(any(Game.class))).thenReturn(game);
 
@@ -80,6 +82,22 @@ class GameServiceTest {
     void generateComputerMove_negativeTest() {
         Assertions.assertThrows(IllegalArgumentException.class, () -> {
             Move computerMove = gameService.generateComputerMove(4);
+        });
+    }
+
+    @Test
+    void updateGame_positiveTest() {
+        Game game = new Game(0, "John Doe", Move.Rock, Move.Paper, Status.Finished, Result.Lose);
+        when(gameRepository.save(any(Game.class))).thenReturn(game);
+
+        Game actual = gameService.updateGame(0, Move.Rock);
+        Assertions.assertEquals(game, actual);
+    }
+
+    @Test
+    void updateGame_invalidGameId() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            Game game = gameService.updateGame(-1, Move.Rock);
         });
     }
 }
