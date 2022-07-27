@@ -3,9 +3,9 @@ package com.example.rpsproject.service;
 import com.example.rpsproject.dao.GameRepository;
 import com.example.rpsproject.dto.NewGameResDTO;
 import com.example.rpsproject.model.Game;
+import com.example.rpsproject.model.Move;
 import com.example.rpsproject.model.Status;
 import org.junit.jupiter.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -13,8 +13,8 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.internal.bytebuddy.implementation.bytecode.Throw;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
@@ -57,5 +57,19 @@ public class GameServiceTest {
         String expectedMessage = "Please provide a playerName to continue";
         String actualMessage = exception.getMessage();
         Assertions.assertTrue(actualMessage.contains(expectedMessage));
+    }
+
+    @Test
+    void test_generateMoveInt() {
+        int actual = gameService.generateMoveInt();
+
+        assertThat(actual).isBetween(0, 3);
+    }
+
+    @Test
+    void generateComputerMove_positiveTest() {
+        Move computerMove = gameService.generateComputerMove(0);
+
+        Assertions.assertEquals(Move.Rock, computerMove);
     }
 }

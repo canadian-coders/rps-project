@@ -1,6 +1,9 @@
 package com.example.rpsproject.controller;
 
 import com.example.rpsproject.dto.NewGameResDTO;
+import com.example.rpsproject.model.Game;
+import com.example.rpsproject.model.Move;
+import com.example.rpsproject.model.Result;
 import com.example.rpsproject.model.Status;
 import com.example.rpsproject.service.GameService;
 import org.junit.jupiter.api.Assertions;
@@ -15,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class GameControllerTest {
+class GameControllerTest {
 
     @Mock
     private GameService gameService;
@@ -42,4 +45,30 @@ public class GameControllerTest {
         int expectedStatus = 400;
         assertThat(response.getStatusCodeValue()).isEqualTo(expectedStatus);
     }
+
+    @Test
+    void resolveGame_positiveTest() {
+        Game game = new Game(0, "John Doe", Move.Paper, Move.Rock, Status.finished, Result.Win);
+        when(gameService.updateGame(0, Move.Paper)).thenReturn(game);
+
+        ResponseEntity<?> actualResponse = gameController.resolveGame("0", "paper");
+        Assertions.assertEquals(game, actualResponse.getBody());
+    }
+
+    @Test
+    void resolveNewGame_invalidGameId() {
+        when(gameService.updateGame(-1, Move.Paper)).thenThrow(IllegalArgumentException.class);
+        ResponseEntity<?> response = gameController.resolveGame("-1", "paper");
+        int expectedStatus = 400;
+        assertThat(response.getStatusCodeValue()).isEqualTo(expectedStatus);
+    }
+
+    @Test
+    void resolveNewGame_invalidMove() {
+        when(gameService.updateGame(1, Move.valueOf("   "))).thenThrow(IllegalArgumentException.class);
+        ResponseEntity<?> response = gameController.resolveGame("0", "  ");
+        int expectedStatus = 400;
+        assertThat(response.getStatusCodeValue()).isEqualTo(expectedStatus);
+    }
+
 }

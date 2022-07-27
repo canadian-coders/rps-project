@@ -26,4 +26,17 @@ public class GameController {
             return ResponseEntity.status(400).body(e.getMessage());
         }
     }
+
+    //patch mapping
+    @PatchMapping("/{gameId}")
+    public ResponseEntity<?> resolveGame(@PathVariable("gameId") String gameId, @RequestBody String playerMove) {
+        return ResponseEntity.ok().body("test");
+    }
+    //take in the game id (path var), playerMove (body)
+    // parseInt gameId and change string to Move enum
+    //query the game id first
+    //generate a computer move
+    //check result of computer vs player
+    //add the player move, computer move, result, and set status to the game object and update game
+    //response entity returns game object
 }
