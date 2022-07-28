@@ -2,6 +2,7 @@ package com.example.rpsproject.service;
 
 import com.example.rpsproject.dao.GameRepository;
 import com.example.rpsproject.dto.NewGameResDTO;
+import com.example.rpsproject.exception.GameFinished;
 import com.example.rpsproject.exception.GameNotFound;
 import com.example.rpsproject.model.Game;
 import com.example.rpsproject.model.Move;
@@ -89,7 +90,7 @@ class GameServiceTest {
     }
 
     @Test
-    void updateGame_positiveTest() throws GameNotFound {
+    void updateGame_positiveTest() throws GameNotFound, GameFinished {
         Game oldGame = new Game(1, "John Doe", null,null, Status.Started, null);
         Game game = new Game(1, "John Doe", Move.Rock, Move.Paper, Status.Finished, Result.Lose);
         when(gameRepository.findById(1)).thenReturn(Optional.of(oldGame));
@@ -105,4 +106,13 @@ class GameServiceTest {
             Game game = gameService.updateGame(-1, Move.Rock);
         });
     }
+    @Test
+    void updateGame_GameFinished() {
+        Game game = new Game(1, "John Doe", Move.Rock, Move.Paper, Status.Finished, Result.Lose);
+        when(gameRepository.findById(1)).thenReturn(Optional.of(game));
+        Assertions.assertThrows(GameFinished.class, () -> {
+            Game actualGame = gameService.updateGame(1, Move.Rock);
+        });
+    }
+
 }

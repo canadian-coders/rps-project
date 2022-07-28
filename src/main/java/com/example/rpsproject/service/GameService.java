@@ -2,6 +2,7 @@ package com.example.rpsproject.service;
 
 import com.example.rpsproject.dao.GameRepository;
 import com.example.rpsproject.dto.NewGameResDTO;
+import com.example.rpsproject.exception.GameFinished;
 import com.example.rpsproject.exception.GameNotFound;
 import com.example.rpsproject.model.Game;
 import com.example.rpsproject.model.Move;
@@ -54,23 +55,12 @@ public class GameService {
         }
     }
 
-
-
-    // update game -> get game by id, then get the computer move, get the result from Move enum and set the computerMove and result to the game
-    @Transactional
-    public Game updateGame(int id, Move playerMove) throws GameNotFound {
-        //checks gameid exists
-        Optional<Game> game = gameRepository.findById(id);
-        if (!game.isPresent()) {
-            throw new GameNotFound("Game with id:" + id + " is not found");
-        }
-        int moveInt = generateMoveInt();
-        Move computerMove = generateComputerMove(moveInt);
+    public Result generateResult(Move playerMove,Move computerMove){
         //check draw
         Result result = null;
         if (playerMove == computerMove) {
             result = Result.Draw;
-        //check player wins or not
+            //check player wins or not
         } else {
             Boolean result2 = playerMove.winOrNot(computerMove);
             if (result2) {
@@ -79,6 +69,24 @@ public class GameService {
                 result = Result.Lose;
             }
         }
+        return result;
+
+    }
+
+    // update game -> get game by id, then get the computer move, get the result from Move enum and set the computerMove and result to the game
+    @Transactional
+    public Game updateGame(int id, Move playerMove) throws GameNotFound, GameFinished {
+        //checks gameid exists
+        Optional<Game> game = gameRepository.findById(id);
+        if (!game.isPresent()) {
+            throw new GameNotFound("Game with id:" + id + " is not found");
+        }
+        if(game.get().getStatus()==Status.Finished){
+            throw new GameFinished("Game with id:" + id + " is finished");
+        }
+        int moveInt = generateMoveInt();
+        Move computerMove = generateComputerMove(moveInt);
+        Result result = generateResult(playerMove,computerMove);
         Game currentGame =game.get();
         currentGame.setPlayerMove(playerMove);
         currentGame.setComputerMove(computerMove);
@@ -86,4 +94,6 @@ public class GameService {
         currentGame.setStatus(Status.Finished);
         return gameRepository.save(currentGame);
     }
+
+
 }

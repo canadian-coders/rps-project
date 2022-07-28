@@ -1,6 +1,7 @@
 package com.example.rpsproject.controller;
 
 import com.example.rpsproject.dto.NewGameResDTO;
+import com.example.rpsproject.exception.GameFinished;
 import com.example.rpsproject.exception.GameNotFound;
 import com.example.rpsproject.model.Game;
 import com.example.rpsproject.model.Move;
@@ -33,8 +34,12 @@ public class GameController {
     //patch mapping
     @PatchMapping("/{gameId}")
     public ResponseEntity<?> resolveGame(@PathVariable("gameId") int gameId, @RequestBody String playerMove) {
+
         try {
-            Move move = null;
+            if(playerMove.trim().isEmpty()){
+                throw new IllegalArgumentException("PlayerMove cannot be empty");
+            }
+            Move move=null;
             if (playerMove.equals("Rock")) {
                 move = Move.Rock;
             }
@@ -46,7 +51,9 @@ public class GameController {
             }
             Game game = gameService.updateGame(gameId, move);
             return ResponseEntity.ok().body(game);
-        } catch (GameNotFound e) {
+        } catch (GameNotFound | GameFinished e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }catch (IllegalArgumentException e){
             return ResponseEntity.status(400).body(e.getMessage());
         }
 
