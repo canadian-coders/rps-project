@@ -2,6 +2,7 @@ package com.example.rpsproject.service;
 
 import com.example.rpsproject.dao.GameRepository;
 import com.example.rpsproject.dto.NewGameResDTO;
+import com.example.rpsproject.exception.GameNotFound;
 import com.example.rpsproject.model.Game;
 import com.example.rpsproject.model.Move;
 import com.example.rpsproject.model.Result;
@@ -15,6 +16,8 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
+
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -86,17 +89,19 @@ class GameServiceTest {
     }
 
     @Test
-    void updateGame_positiveTest() {
-        Game game = new Game(0, "John Doe", Move.Rock, Move.Paper, Status.Finished, Result.Lose);
+    void updateGame_positiveTest() throws GameNotFound {
+        Game oldGame = new Game(1, "John Doe", null,null, Status.Started, null);
+        Game game = new Game(1, "John Doe", Move.Rock, Move.Paper, Status.Finished, Result.Lose);
+        when(gameRepository.findById(1)).thenReturn(Optional.of(oldGame));
         when(gameRepository.save(any(Game.class))).thenReturn(game);
 
-        Game actual = gameService.updateGame(0, Move.Rock);
+        Game actual = gameService.updateGame(1, Move.Rock);
         Assertions.assertEquals(game, actual);
     }
 
     @Test
     void updateGame_invalidGameId() {
-        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+        Assertions.assertThrows(GameNotFound.class, () -> {
             Game game = gameService.updateGame(-1, Move.Rock);
         });
     }

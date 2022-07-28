@@ -2,13 +2,17 @@ package com.example.rpsproject.service;
 
 import com.example.rpsproject.dao.GameRepository;
 import com.example.rpsproject.dto.NewGameResDTO;
+import com.example.rpsproject.exception.GameNotFound;
 import com.example.rpsproject.model.Game;
 import com.example.rpsproject.model.Move;
+import com.example.rpsproject.model.Result;
 import com.example.rpsproject.model.Status;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
+import java.util.Optional;
 import java.util.Random;
 
 @Service
@@ -50,8 +54,36 @@ public class GameService {
         }
     }
 
+
+
     // update game -> get game by id, then get the computer move, get the result from Move enum and set the computerMove and result to the game
-    public Game updateGame(int id, Move playerMove) {
-        return new Game();
+    @Transactional
+    public Game updateGame(int id, Move playerMove) throws GameNotFound {
+        //checks gameid exists
+        Optional<Game> game = gameRepository.findById(id);
+        if (!game.isPresent()) {
+            throw new GameNotFound("Game with id:" + id + " is not found");
+        }
+        int moveInt = generateMoveInt();
+        Move computerMove = generateComputerMove(moveInt);
+        //check draw
+        Result result = null;
+        if (playerMove == computerMove) {
+            result = Result.Draw;
+        //check player wins or not
+        } else {
+            Boolean result2 = playerMove.winOrNot(computerMove);
+            if (result2) {
+                result = Result.Win;
+            } else {
+                result = Result.Lose;
+            }
+        }
+        Game currentGame =game.get();
+        currentGame.setPlayerMove(playerMove);
+        currentGame.setComputerMove(computerMove);
+        currentGame.setResult(result);
+        currentGame.setStatus(Status.Finished);
+        return gameRepository.save(currentGame);
     }
 }

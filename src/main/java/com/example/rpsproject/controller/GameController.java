@@ -1,6 +1,9 @@
 package com.example.rpsproject.controller;
 
 import com.example.rpsproject.dto.NewGameResDTO;
+import com.example.rpsproject.exception.GameNotFound;
+import com.example.rpsproject.model.Game;
+import com.example.rpsproject.model.Move;
 import com.example.rpsproject.service.GameService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -29,8 +32,24 @@ public class GameController {
 
     //patch mapping
     @PatchMapping("/{gameId}")
-    public ResponseEntity<?> resolveGame(@PathVariable("gameId") String gameId, @RequestBody String playerMove) {
-        return ResponseEntity.ok().body("test");
+    public ResponseEntity<?> resolveGame(@PathVariable("gameId") int gameId, @RequestBody String playerMove) {
+        try {
+            Move move = null;
+            if (playerMove.equals("Rock")) {
+                move = Move.Rock;
+            }
+            if (playerMove.equals("Paper")) {
+                move = Move.Paper;
+            }
+            if (playerMove.equals("Scissors")) {
+                move = Move.Scissors;
+            }
+            Game game = gameService.updateGame(gameId, move);
+            return ResponseEntity.ok().body(game);
+        } catch (GameNotFound e) {
+            return ResponseEntity.status(400).body(e.getMessage());
+        }
+
     }
     //take in the game id (path var), playerMove (body)
     // parseInt gameId and change string to Move enum

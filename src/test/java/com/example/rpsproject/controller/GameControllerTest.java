@@ -1,6 +1,7 @@
 package com.example.rpsproject.controller;
 
 import com.example.rpsproject.dto.NewGameResDTO;
+import com.example.rpsproject.exception.GameNotFound;
 import com.example.rpsproject.model.Game;
 import com.example.rpsproject.model.Move;
 import com.example.rpsproject.model.Result;
@@ -47,26 +48,26 @@ class GameControllerTest {
     }
 
     @Test
-    void resolveGame_positiveTest() {
+    void resolveGame_positiveTest() throws GameNotFound {
         Game game = new Game(0, "John Doe", Move.Paper, Move.Rock, Status.Finished, Result.Win);
         when(gameService.updateGame(0, Move.Paper)).thenReturn(game);
 
-        ResponseEntity<?> actualResponse = gameController.resolveGame("0", "paper");
+        ResponseEntity<?> actualResponse = gameController.resolveGame(0, "paper");
         Assertions.assertEquals(game, actualResponse.getBody());
     }
 
     @Test
-    void resolveNewGame_invalidGameId() {
+    void resolveNewGame_invalidGameId() throws GameNotFound {
         when(gameService.updateGame(-1, Move.Paper)).thenThrow(IllegalArgumentException.class);
-        ResponseEntity<?> response = gameController.resolveGame("-1", "paper");
+        ResponseEntity<?> response = gameController.resolveGame(-1, "paper");
         int expectedStatus = 400;
         assertThat(response.getStatusCodeValue()).isEqualTo(expectedStatus);
     }
 
     @Test
-    void resolveNewGame_invalidMove() {
+    void resolveNewGame_invalidMove() throws GameNotFound {
         when(gameService.updateGame(1, Move.valueOf("   "))).thenThrow(IllegalArgumentException.class);
-        ResponseEntity<?> response = gameController.resolveGame("0", "  ");
+        ResponseEntity<?> response = gameController.resolveGame(0, "  ");
         int expectedStatus = 400;
         assertThat(response.getStatusCodeValue()).isEqualTo(expectedStatus);
     }
