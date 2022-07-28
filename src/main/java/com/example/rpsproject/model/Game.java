@@ -33,7 +33,7 @@ public class Game {
     private Result result;
 
     public Game (String playerName) {
-        this.status = Status.started;
+        this.status = Status.Started;
         this.playerName = playerName;
     }
 

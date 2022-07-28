@@ -2,7 +2,11 @@ package com.example.rpsproject.service;
 
 import com.example.rpsproject.dao.GameRepository;
 import com.example.rpsproject.dto.NewGameResDTO;
+import com.example.rpsproject.exception.GameFinished;
+import com.example.rpsproject.exception.GameNotFound;
 import com.example.rpsproject.model.Game;
+import com.example.rpsproject.model.Move;
+import com.example.rpsproject.model.Result;
 import com.example.rpsproject.model.Status;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Disabled;
@@ -13,13 +17,15 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.modelmapper.ModelMapper;
-import org.modelmapper.internal.bytebuddy.implementation.bytecode.Throw;
 
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
-public class GameServiceTest {
+class GameServiceTest {
     @Spy
     private ModelMapper modelMapper;
 
@@ -32,10 +38,10 @@ public class GameServiceTest {
     @Test
     void verify_new_game_created_PositiveTest() {
         // create DTO for GameService's createNewGame method to return
-        NewGameResDTO responseDto = new NewGameResDTO(0, Status.started, "John Doe");
+        NewGameResDTO responseDto = new NewGameResDTO(0, Status.Started, "John Doe");
 
         // mock game object to return from the DAO layer
-        Game game = new Game(0,"John Doe",null, null,Status.started, null);
+        Game game = new Game(0,"John Doe",null, null,Status.Started, null);
         // mock method call to return the mock game object
         when(gameRepository.save(any(Game.class))).thenReturn(game);
 
@@ -58,4 +64,55 @@ public class GameServiceTest {
         String actualMessage = exception.getMessage();
         Assertions.assertTrue(actualMessage.contains(expectedMessage));
     }
+
+    @Test
+    void test_generateMoveInt() {
+        int actual = gameService.generateMoveInt();
+
+        assertThat(actual).isBetween(0, 2);
+    }
+
+    @Test
+    void generateComputerMove_positiveTest() {
+        Move computerMove1 = gameService.generateComputerMove(0);
+        Move computerMove2 = gameService.generateComputerMove(1);
+        Move computerMove3 = gameService.generateComputerMove(2);
+        Assertions.assertEquals(Move.Rock, computerMove1);
+        Assertions.assertEquals(Move.Paper, computerMove2);
+        Assertions.assertEquals(Move.Scissors, computerMove3);
+    }
+
+    @Test
+    void generateComputerMove_negativeTest() {
+        Assertions.assertThrows(IllegalArgumentException.class, () -> {
+            Move computerMove = gameService.generateComputerMove(4);
+        });
+    }
+
+    @Test
+    void updateGame_positiveTest() throws GameNotFound, GameFinished {
+        Game oldGame = new Game(1, "John Doe", null,null, Status.Started, null);
+        Game game = new Game(1, "John Doe", Move.Rock, Move.Paper, Status.Finished, Result.Lose);
+        when(gameRepository.findById(1)).thenReturn(Optional.of(oldGame));
+        when(gameRepository.save(any(Game.class))).thenReturn(game);
+
+        Game actual = gameService.updateGame(1, Move.Rock);
+        Assertions.assertEquals(game, actual);
+    }
+
+    @Test
+    void updateGame_invalidGameId() {
+        Assertions.assertThrows(GameNotFound.class, () -> {
+            Game game = gameService.updateGame(-1, Move.Rock);
+        });
+    }
+    @Test
+    void updateGame_GameFinished() {
+        Game game = new Game(1, "John Doe", Move.Rock, Move.Paper, Status.Finished, Result.Lose);
+        when(gameRepository.findById(1)).thenReturn(Optional.of(game));
+        Assertions.assertThrows(GameFinished.class, () -> {
+            Game actualGame = gameService.updateGame(1, Move.Rock);
+        });
+    }
+
 }

@@ -7,6 +7,8 @@ public enum Move {
         public boolean winOrNot(Move move) {
             return (Scissors == move);
         }
+
+
     },
 
     Paper {
@@ -14,6 +16,8 @@ public enum Move {
         public boolean winOrNot(Move move) {
             return (Rock == move);
         }
+
+
     },
 
     Scissors {
@@ -21,6 +25,8 @@ public enum Move {
         public boolean winOrNot(Move move) {
             return (Paper == move);
         }
+
+
     };
 
     public abstract boolean winOrNot(Move move);

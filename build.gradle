@@ -60,8 +60,8 @@ sonarqube {
 		property "sonar.projectKey", "canadian-coders_rps-project"
 		property "sonar.organization", "canadian-coders"
 		property "sonar.host.url", "https://sonarcloud.io"
-		property "sonar.coverage.exclusions", "**/com/example/rpsproject/model/*, " + "**/com/example/rpsproject/dto/*, " +
-				"**/com/example/rpsproject/RpsProjectApplication.java"
+		property "sonar.coverage.exclusions", "**/com/example/rpsproject/model/*, " + "**/com/example/rpsproject/dto/*, " + "**/com/example/rpsproject/exception/*, " +
+		"**/com/example/rpsproject/RpsProjectApplication.java"
 
 
 	}
